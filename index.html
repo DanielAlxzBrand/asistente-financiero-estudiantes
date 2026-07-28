@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente Financiero para Estudiantes Universitarios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12213B; --ink-2:#1B3358; --paper:#F1F2ED; --paper-card:#FBFBF8;
+    --gold:#C9962F; --gold-dark:#9C7420; --teal:#1F6F63; --teal-light:#E4EFEC;
+    --coral:#B5533C; --coral-light:#FBEBE7; --amber-light:#FBF1DF;
+    --line: rgba(18,33,59,.13); --line-soft: rgba(18,33,59,.07); --muted:#5B6472;
+    --shadow: 0 1px 2px rgba(18,33,59,.04), 0 8px 24px -12px rgba(18,33,59,.18);
+    --radius: 14px;
+    --slate-light:#EAEDF4; --slate:#5C6B8C;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans', sans-serif; line-height:1.55; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .display{font-family:'Fraunces', serif;}
+  .shell{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+  header.top{position:sticky; top:0; z-index:50; background:rgba(241,242,237,.86); backdrop-filter:blur(8px); border-bottom:1px solid var(--line);}
+  .top-inner{display:flex; align-items:center; justify-content:space-between; padding:16px 0;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{width:38px; height:38px; border-radius:9px; background:var(--ink); display:flex; align-items:center; justify-content:center; color:var(--gold); font-family:'Fraunces', serif; font-weight:600; font-size:16px; flex:none;}
+  .brand-text{display:flex; flex-direction:column; line-height:1.15;}
+  .brand-text b{font-family:'Fraunces', serif; font-size:16.5px; font-weight:600;}
+  .brand-text span{font-size:11.5px; color:var(--muted); letter-spacing:.02em;}
+  nav.top-links{display:flex; gap:20px; font-size:13px; color:var(--muted);}
+  nav.top-links a{color:var(--muted); text-decoration:none;}
+  nav.top-links a:hover{color:var(--ink);}
+  .cop-badge{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--teal); background:var(--teal-light); padding:4px 10px; border-radius:100px;}
+
+  .hero{padding:64px 0 40px; display:grid; grid-template-columns: 1.05fr .95fr; gap:56px; align-items:start;}
+  .eyebrow{display:inline-flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:.09em; color:var(--teal); text-transform:uppercase; background:var(--teal-light); padding:6px 12px; border-radius:100px; margin-bottom:22px;}
+  .eyebrow::before{content:"●"; font-size:8px;}
+  h1.hero-title{font-family:'Fraunces', serif; font-weight:600; font-size:clamp(30px, 4vw, 44px); line-height:1.1; letter-spacing:-.01em; margin:0 0 20px;}
+  h1.hero-title em{font-style:italic; color:var(--gold-dark); font-weight:500;}
+  .hero-lede{font-size:16px; color:var(--ink-2); max-width:46ch; margin:0 0 22px;}
+  .source-quote{border-left:3px solid var(--gold); padding:4px 0 4px 18px; margin:0 0 26px; font-family:'Fraunces', serif; font-style:italic; font-size:15px; color:var(--ink-2); max-width:44ch;}
+  .source-quote cite{display:block; font-family:'IBM Plex Mono', monospace; font-style:normal; font-size:11px; color:var(--muted); margin-top:8px;}
+  .hero-stats{display:flex; gap:26px; margin-top:8px; flex-wrap:wrap;}
+  .hstat b{display:block; font-family:'Fraunces', serif; font-size:24px; color:var(--ink);}
+  .hstat span{font-size:11.5px; color:var(--muted);}
+
+  .form-card{background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:28px 28px 24px; position:relative;}
+  .form-card h2{font-family:'Fraunces', serif; font-weight:600; font-size:20px; margin:0 0 4px;}
+  .form-card p.help{font-size:12.5px; color:var(--muted); margin:0 0 12px;}
+  .fieldset-title{display:flex; align-items:center; gap:9px; margin:22px 0 12px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--gold-dark);}
+  .fieldset-title:first-of-type{margin-top:2px;}
+  .fieldset-title .n{width:18px; height:18px; border-radius:50%; background:var(--amber-light); color:var(--gold-dark); display:flex; align-items:center; justify-content:center; font-size:9.5px;}
+  .fieldset-title .rule{flex:1; height:1px; background:var(--line);}
+  .field{margin-bottom:13px;}
+  .field label{display:block; font-size:11.5px; font-weight:600; letter-spacing:.02em; color:var(--ink-2); margin-bottom:6px;}
+  .field input, .field select, .field textarea{width:100%; padding:10px 12px; font-size:14px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); font-family:'IBM Plex Sans', sans-serif; transition:border-color .15s, box-shadow .15s;}
+  .field textarea{resize:vertical; min-height:56px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,111,99,.13);}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .hint{font-size:11px; color:var(--muted); margin-top:5px;}
+  .callout{display:flex; gap:9px; background:var(--slate-light); border:1px solid rgba(92,107,140,.25); border-radius:9px; padding:10px 12px; font-size:11.5px; color:var(--slate); margin:6px 0 14px; line-height:1.45;}
+  .callout .ico{flex:none; font-family:'Fraunces', serif; font-weight:700;}
+  .input-cop{position:relative;}
+  .input-cop::before{content:"COP $"; position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace; pointer-events:none;}
+  .input-cop input{padding-left:56px !important;}
+  .btn-primary{width:100%; margin-top:14px; background:var(--ink); color:#fff; border:none; padding:13px 20px; border-radius:9px; font-weight:600; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:9px; transition:background .15s, transform .1s;}
+  .btn-primary:hover{background:var(--ink-2);}
+  .btn-primary:active{transform:scale(.99);}
+  .error-msg{display:none; font-size:12px; color:var(--coral); margin-top:12px; background:var(--coral-light); border:1px solid rgba(181,83,60,.25); padding:10px 12px; border-radius:8px;}
+
+  section.results{display:none; padding:10px 0 90px;}
+  .section-head{display:flex; align-items:baseline; gap:14px; margin:54px 0 20px;}
+  .section-head:first-of-type{margin-top:20px;}
+  .section-tag{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--gold-dark); background:var(--amber-light); border:1px solid rgba(201,150,47,.3); padding:3px 9px; border-radius:6px; letter-spacing:.03em; flex:none;}
+  .section-head h2{font-family:'Fraunces', serif; font-weight:600; font-size:22px; margin:0;}
+  .section-head .rule{flex:1; height:1px; background:var(--line);}
+  .section-sub{font-size:12.8px; color:var(--muted); margin:-12px 0 18px;}
+
+  .card{background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);}
+
+  .profile-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  .profile-cell{background:var(--paper-card); padding:18px 16px;}
+  .profile-cell .k{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:7px;}
+  .profile-cell .v{font-family:'Fraunces', serif; font-size:16px; font-weight:600; line-height:1.25;}
+  .profile-cell .v.mono{font-family:'IBM Plex Mono', monospace; font-size:15px;}
+  .avail-badge{display:inline-block; margin-top:7px; font-size:10.5px; font-family:'IBM Plex Mono', monospace; padding:2px 8px; border-radius:100px;}
+  .essential-breakdown{display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; margin-top:16px;}
+  .eb-cell{background:var(--paper-card); padding:14px 12px;}
+  .eb-cell .k{font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:5px;}
+  .eb-cell .v{font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600;}
+
+  .budget-layout{display:grid; grid-template-columns: 280px 1fr; gap:32px; padding:30px; align-items:start;}
+  .ring-wrap{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .ring{width:230px; height:230px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative;}
+  .ring::after{content:""; position:absolute; inset:24px; border-radius:50%; background:var(--paper-card); box-shadow: inset 0 0 0 1px var(--line);}
+  .ring-center{position:relative; z-index:2; text-align:center;}
+  .ring-center .lbl{font-size:10px; letter-spacing:.08em; color:var(--muted); text-transform:uppercase;}
+  .ring-center .amt{font-family:'Fraunces', serif; font-size:17px; font-weight:600; margin-top:4px;}
+  .legend{display:flex; flex-direction:column; gap:0;}
+  .legend-item{display:grid; grid-template-columns:14px 1fr auto auto; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid var(--line-soft);}
+  .legend-item:last-child{border-bottom:none;}
+  .swatch{width:12px; height:12px; border-radius:3px;}
+  .legend-name{font-size:13.5px; font-weight:600;}
+  .legend-desc{font-size:11px; color:var(--muted); font-weight:400; display:block; margin-top:1px;}
+  .legend-pct{font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--muted); text-align:right;}
+  .legend-amt{font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; text-align:right; min-width:118px;}
+  .deficit-banner{margin:0 30px 20px; padding:14px 18px; background:var(--coral-light); border:1px solid rgba(181,83,60,.3); border-radius:10px; font-size:13px; color:var(--coral); display:none;}
+  .limited-banner{margin:0 30px 20px; padding:14px 18px; background:var(--amber-light); border:1px solid rgba(201,150,47,.35); border-radius:10px; font-size:13px; color:var(--gold-dark); display:none;}
+  .limited-banner b{display:block; margin-bottom:6px; font-family:'Fraunces', serif; font-size:14px;}
+  .limited-banner ol{margin:6px 0 0; padding-left:18px;}
+
+  .sliders-card{padding:26px 30px; border-top:1px solid var(--line);}
+  .slider-block{margin-bottom:22px;}
+  .slider-block:last-child{margin-bottom:0;}
+  .slider-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .slider-top .name{font-size:13.5px; font-weight:600;}
+  .slider-top .val{font-family:'IBM Plex Mono', monospace; font-size:15px; color:var(--ink);}
+  input[type=range]{-webkit-appearance:none; width:100%; height:6px; border-radius:100px; background:var(--line-soft); outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:19px; height:19px; border-radius:50%; background:var(--ink); border:3px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.25); cursor:pointer; margin-top:0;}
+  input[type=range]::-moz-range-thumb{width:19px; height:19px; border-radius:50%; background:var(--ink); border:3px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.25); cursor:pointer;}
+  .slider-range-labels{display:flex; justify-content:space-between; font-size:10.5px; color:var(--muted); font-family:'IBM Plex Mono', monospace; margin-top:5px;}
+  .slider-warning{display:none; margin-top:9px; font-size:11.8px; color:var(--gold-dark); background:var(--amber-light); border:1px solid rgba(201,150,47,.3); padding:8px 11px; border-radius:8px;}
+  .slider-warning.show{display:block;}
+  .slider-warning.danger{color:var(--coral); background:var(--coral-light); border-color:rgba(181,83,60,.3);}
+
+  .diag-card{padding:30px; display:grid; grid-template-columns:210px 1fr; gap:30px; align-items:start;}
+  .diag-badge{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:22px 14px; border-radius:12px; text-align:center;}
+  .diag-badge .icon{font-size:28px;}
+  .diag-badge .label{font-family:'Fraunces', serif; font-size:17px; font-weight:600;}
+  .diag-reasons h3{margin:0 0 10px; font-size:14px;}
+  .diag-reasons ul{margin:0; padding-left:18px; font-size:13px; color:var(--ink-2);}
+  .diag-reasons li{margin-bottom:7px;}
+  .diag-metrics{display:flex; gap:20px; margin-top:14px; flex-wrap:wrap;}
+  .dmetric{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted);}
+  .dmetric b{display:block; font-size:15px; color:var(--ink); font-family:'Fraunces', serif;}
+
+  .tips-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  .tip-card{padding:20px; display:flex; gap:13px;}
+  .tip-num{font-family:'Fraunces', serif; font-size:19px; color:var(--gold-dark); flex:none; width:28px;}
+  .tip-body h3{margin:0 0 5px; font-size:14px; font-weight:700;}
+  .tip-body p{margin:0; font-size:12.8px; color:var(--muted);}
+  .tip-source{display:inline-block; margin-top:8px; font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--teal); background:var(--teal-light); padding:2px 8px; border-radius:5px;}
+
+  .savings-types{display:grid; grid-template-columns:repeat(3,1fr); gap:0;}
+  .savings-type{padding:24px; border-right:1px solid var(--line-soft);}
+  .savings-type:last-child{border-right:none;}
+  .st-head{display:flex; align-items:center; gap:9px; margin-bottom:8px;}
+  .st-dot{width:10px; height:10px; border-radius:3px; flex:none;}
+  .st-head h4{margin:0; font-size:14px; font-family:'Fraunces', serif;}
+  .st-amount{font-family:'IBM Plex Mono', monospace; font-size:19px; font-weight:600; margin:6px 0 4px;}
+  .st-pct{font-size:11px; color:var(--muted); margin-bottom:10px;}
+  .st-desc{font-size:12.3px; color:var(--muted); line-height:1.5;}
+
+  .meta-card{padding:28px; display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  .meta-empty{padding:36px; text-align:center; color:var(--muted); font-size:13.5px;}
+  .meta-left{padding-right:28px; border-right:1px solid var(--line);}
+  .meta-left h3{margin:0 0 4px; font-family:'Fraunces', serif; font-size:19px;}
+  .meta-left .meta-cost{font-size:12.5px; color:var(--muted); margin-bottom:18px;}
+  .meta-stat{display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px dashed var(--line-soft); font-size:13px;}
+  .meta-stat:last-child{border-bottom:none;}
+  .meta-stat .lbl{color:var(--muted);}
+  .meta-stat .val{font-family:'IBM Plex Mono', monospace; font-weight:600;}
+  .meta-right{padding-left:28px;}
+  .meta-right h4{margin:0 0 12px; font-size:13.5px;}
+  .meta-priority{display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:11px; padding:5px 11px; border-radius:100px; margin-bottom:14px;}
+  .prio-alta{background:var(--coral-light); color:var(--coral);}
+  .prio-media{background:var(--amber-light); color:var(--gold-dark);}
+  .prio-baja{background:var(--teal-light); color:var(--teal);}
+  .meta-progress-track{height:8px; background:var(--line-soft); border-radius:100px; overflow:hidden; margin:6px 0 20px;}
+  .meta-progress-fill{height:100%; width:6%; background:linear-gradient(90deg, var(--gold), var(--teal)); border-radius:100px;}
+
+  .edu-layout{display:grid; grid-template-columns: 1fr 1.4fr; gap:0;}
+  .edu-amount{padding:28px; border-right:1px solid var(--line); display:flex; flex-direction:column; justify-content:center; gap:5px;}
+  .edu-amount .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);}
+  .edu-amount .big{font-family:'Fraunces', serif; font-size:27px; font-weight:600; color:var(--ink);}
+  .edu-amount .sub{font-size:12px; color:var(--muted);}
+  .edu-text{padding:28px;}
+  .edu-text h3{margin:0 0 9px; font-size:14.5px;}
+  .edu-text p{margin:0 0 13px; font-size:13px; color:var(--ink-2);}
+  .edu-text blockquote{margin:12px 0 0; padding-left:13px; border-left:2px solid var(--gold); font-family:'Fraunces', serif; font-style:italic; font-size:13px; color:var(--muted);}
+
+  .cert-list{padding:8px 0;}
+  .cert-row{display:grid; grid-template-columns: 112px 1fr 120px; gap:14px; align-items:center; padding:15px 24px; border-bottom:1px solid var(--line-soft);}
+  .cert-row:last-child{border-bottom:none;}
+  .cert-priority{font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.03em; padding:4px 9px; border-radius:100px; text-align:center; width:fit-content;}
+  .priority-alta{background:var(--coral-light); color:var(--coral);}
+  .priority-media{background:var(--amber-light); color:var(--gold-dark);}
+  .priority-base{background:var(--teal-light); color:var(--teal);}
+  .cert-title{font-size:13.5px; font-weight:600;}
+  .cert-desc{font-size:12px; color:var(--muted); margin-top:2px;}
+  .cert-source{font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--teal); margin-top:5px; display:inline-block;}
+  .cert-tag{font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--muted); text-align:right;}
+  .cert-why{font-size:10.5px; color:var(--muted); margin-top:22px; padding:13px 24px; border-top:1px dashed var(--line); font-style:italic;}
+
+  .invest-blocked{padding:30px; display:flex; gap:16px; align-items:flex-start;}
+  .invest-blocked .ico{font-size:24px; flex:none;}
+  .invest-blocked h3{margin:0 0 8px; font-size:15.5px; font-family:'Fraunces', serif;}
+  .invest-blocked p{margin:0 0 6px; font-size:13px; color:var(--ink-2);}
+  .invest-blocked ul{margin:10px 0 0; padding-left:18px; font-size:12.6px; color:var(--muted);}
+
+  .risk-header{display:flex; align-items:center; gap:16px; padding:24px 30px; border-bottom:1px solid var(--line); flex-wrap:wrap;}
+  .risk-pill{font-family:'Fraunces', serif; font-size:16px; font-weight:600; padding:7px 16px; border-radius:100px;}
+  .risk-desc{font-size:12.6px; color:var(--muted); max-width:60ch;}
+  .invest-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:0;}
+  .invest-card{padding:22px; border-right:1px solid var(--line-soft); border-top:1px solid var(--line-soft);}
+  .invest-card h4{margin:0 0 7px; font-size:13.8px; font-family:'Fraunces', serif;}
+  .invest-meta{display:flex; gap:5px; margin-bottom:9px; flex-wrap:wrap;}
+  .invest-meta span{font-family:'IBM Plex Mono', monospace; font-size:9.5px; padding:2px 7px; border-radius:100px; background:var(--line-soft); color:var(--muted);}
+  .invest-card p{font-size:12px; color:var(--muted); margin:0 0 7px;}
+  .invest-card .row{font-size:11.5px; margin-bottom:4px;}
+  .invest-card .row b{color:var(--ink-2);}
+  .invest-disclaimer{padding:16px 30px; font-size:11.3px; color:var(--muted); background:var(--amber-light); border-top:1px solid var(--line);}
+
+  .calc-steps{padding:8px 0;}
+  .calc-row{display:grid; grid-template-columns:28px 1fr 150px; align-items:center; gap:14px; padding:15px 28px; border-bottom:1px solid var(--line-soft);}
+  .calc-row:last-child{border-bottom:none;}
+  .calc-row.total{background:var(--slate-light);}
+  .calc-op{font-family:'IBM Plex Mono', monospace; font-size:15px; color:var(--muted); text-align:center;}
+  .calc-label{font-size:13.5px; font-weight:600;}
+  .calc-sub{font-size:11px; color:var(--muted); margin-top:2px;}
+  .calc-amt{font-family:'IBM Plex Mono', monospace; font-size:14.5px; font-weight:600; text-align:right;}
+  .calc-divider{padding:10px 28px; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--gold-dark); background:var(--amber-light); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .calc-dist-row{display:grid; grid-template-columns:1fr 80px 150px; align-items:center; gap:14px; padding:13px 28px; border-bottom:1px solid var(--line-soft);}
+  .calc-dist-row:last-child{border-bottom:none;}
+  .calc-dist-name{font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;}
+  .calc-dist-pct{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--muted); text-align:center;}
+  .calc-dist-amt{font-family:'IBM Plex Mono', monospace; font-size:13.5px; font-weight:600; text-align:right;}
+
+  .save-habits{padding:28px;}
+  .save-habits h3{margin:0 0 12px; font-size:14.5px;}
+  .habit-item{display:flex; gap:9px; margin-bottom:11px; font-size:12.8px; color:var(--ink-2);}
+  .habit-item svg{flex:none; margin-top:2px; color:var(--teal);}
+
+  .reflect{background:var(--ink); color:#EAECF1; border-radius:var(--radius); padding:28px 30px; margin-top:52px;}
+  .reflect h3{font-family:'Fraunces', serif; font-weight:600; font-size:15.5px; margin:0 0 10px; color:#fff; display:flex; align-items:center; gap:9px;}
+  .reflect p{font-size:12.6px; color:#B7BECC; margin:0 0 10px; max-width:82ch;}
+  .sources-strip{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+  .source-chip{font-family:'IBM Plex Mono', monospace; font-size:10px; color:#B7BECC; border:1px solid rgba(255,255,255,.15); padding:4px 10px; border-radius:100px;}
+
+  footer.site{padding:30px 0 60px; text-align:center; color:var(--muted); font-size:11.5px;}
+
+  @media (max-width: 880px){
+    .hero{grid-template-columns:1fr; gap:30px; padding-top:34px;}
+    .profile-grid{grid-template-columns:repeat(2,1fr);}
+    .essential-breakdown{grid-template-columns:repeat(2,1fr);}
+    .budget-layout{grid-template-columns:1fr; padding:22px;}
+    .tips-grid{grid-template-columns:1fr;}
+    .edu-layout, .diag-card, .meta-card{grid-template-columns:1fr;}
+    .edu-amount{border-right:none; border-bottom:1px solid var(--line);}
+    .meta-left{border-right:none; border-bottom:1px solid var(--line); padding-right:0; padding-bottom:20px; margin-bottom:20px;}
+    .meta-right{padding-left:0;}
+    .savings-types{grid-template-columns:1fr;}
+    .savings-type{border-right:none; border-bottom:1px solid var(--line-soft);}
+    .cert-row{grid-template-columns:80px 1fr;}
+    .cert-tag{display:none;}
+    .calc-row{grid-template-columns:20px 1fr 100px; padding:14px 16px;}
+    .calc-dist-row{grid-template-columns:1fr 50px 100px; padding:12px 16px;}
+    nav.top-links{display:none;}
+    .field-row{grid-template-columns:1fr;}
+    .invest-card{border-right:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="shell top-inner">
+    <div class="brand">
+      <div class="brand-mark">AF</div>
+      <div class="brand-text"><b>Asistente Financiero</b><span>Para estudiantes universitarios</span></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <nav class="top-links">
+        <a href="#perfil">Perfil</a><a href="#presupuesto">Presupuesto</a><a href="#ahorro-tipos">Ahorro</a>
+        <a href="#inversion">Inversión</a><a href="#calculo">Cálculo</a>
+      </nav>
+      <span class="cop-badge">COP · Colombia</span>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+
+  <section class="hero" id="inicio">
+    <div class="hero-copy">
+      <span class="eyebrow">Educación financiera aplicada · Colombia</span>
+      <h1 class="hero-title">Organiza tu dinero <em>mientras</em> estudias y trabajas.</h1>
+      <p class="hero-lede">Cuéntanos tu situación real en pesos colombianos. Tú ajustas cuánto destinar a ocio y ahorro; el asistente calcula el resto con criterio de asesor, no de calculadora.</p>
+      <blockquote class="source-quote">
+        “No se trata de ahorrar lo que te sobra, sino de destinar una parte fija de tu ingreso, como si fuera un gasto necesario.”
+        <cite>— Guía Jóvenes: manejo de dinero</cite>
+      </blockquote>
+      <div class="hero-stats">
+        <div class="hstat"><b>3</b><span>tipos de ahorro separados</span></div>
+        <div class="hstat"><b>2</b><span>controles deslizantes</span></div>
+        <div class="hstat"><b>100%</b><span>trazabilidad del cálculo</span></div>
+      </div>
+    </div>
+
+    <form class="form-card" id="perfil-form">
+      <h2>Tu perfil financiero</h2>
+      <p class="help">Todos los valores en pesos colombianos (COP).</p>
+
+      <div class="fieldset-title"><span class="n">1</span>Datos académicos y laborales<span class="rule"></span></div>
+      <div class="field"><label for="carrera">Carrera</label><input type="text" id="carrera" placeholder="Ej. Ingeniería Industrial" required></div>
+      <div class="field-row">
+        <div class="field"><label for="semestre">Semestre actual</label><input type="number" id="semestre" min="1" max="14" placeholder="Ej. 5" required></div>
+        <div class="field"><label for="horas">Horas de trabajo / semana</label><input type="number" id="horas" min="0" max="80" placeholder="Ej. 20" required></div>
+      </div>
+      <div class="field">
+        <label for="ingreso">Ingreso mensual neto</label>
+        <div class="input-cop"><input type="number" id="ingreso" min="1" placeholder="1.500.000" required></div>
+        <div class="callout"><span class="ico">ⓘ</span><span>El ingreso mensual debe corresponder al dinero recibido <b>después de</b> impuestos, aportes a seguridad social, retenciones y cualquier otro descuento aplicable. Este asistente siempre asume que registras un <b>ingreso neto</b>, no bruto.</span></div>
+      </div>
+
+      <div class="fieldset-title"><span class="n">2</span>Gastos esenciales del mes<span class="rule"></span></div>
+      <div class="field">
+        <label for="vivienda_tipo">Vivienda</label>
+        <select id="vivienda_tipo">
+          <option value="arriendo">Pago arriendo</option>
+          <option value="familia">Vivo con familia (sin pago fijo)</option>
+          <option value="aporte">Vivo con familia y aporto al hogar</option>
+          <option value="propia">Vivienda propia (sin cuota / ya pagada)</option>
+        </select>
+      </div>
+      <div class="field" id="vivienda_monto_wrap">
+        <label id="vivienda_monto_label" for="vivienda_monto">Valor mensual de arriendo</label>
+        <div class="input-cop"><input type="number" id="vivienda_monto" min="0" placeholder="700.000"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="alimentacion">Alimentación</label><div class="input-cop"><input type="number" id="alimentacion" min="0" placeholder="400.000"></div></div>
+        <div class="field"><label for="transporte">Transporte</label><div class="input-cop"><input type="number" id="transporte" min="0" placeholder="150.000"></div></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="servicios">Servicios públicos (agua, luz, gas)</label><div class="input-cop"><input type="number" id="servicios" min="0" placeholder="120.000"></div></div>
+        <div class="field"><label for="internet">Internet y telefonía</label><div class="input-cop"><input type="number" id="internet" min="0" placeholder="80.000"></div></div>
+      </div>
+      <div class="field">
+        <label for="deudas">Deudas u obligaciones financieras (cuotas mensuales)</label>
+        <div class="input-cop"><input type="number" id="deudas" min="0" placeholder="0"></div>
+        <div class="hint">Créditos, tarjeta de crédito, crédito educativo (ICETEX), fiado, etc. Escribe 0 si no tienes.</div>
+      </div>
+      <div class="field">
+        <label for="tiene_fondo">¿Ya tienes un fondo de emergencia ahorrado?</label>
+        <select id="tiene_fondo">
+          <option value="no">No, todavía no</option>
+          <option value="si">Sí, ya tengo uno</option>
+        </select>
+        <div class="hint">Esto nos ayuda a priorizar correctamente tu ahorro y a decidir si es momento de invertir.</div>
+      </div>
+
+      <div class="fieldset-title"><span class="n">3</span>Meta financiera personal (opcional)<span class="rule"></span></div>
+      <div class="field-row">
+        <div class="field"><label for="meta_nombre">¿Qué quieres financiar?</label><input type="text" id="meta_nombre" placeholder="Ej. Computador, moto, certificación..."></div>
+        <div class="field"><label for="meta_valor">Valor estimado</label><div class="input-cop"><input type="number" id="meta_valor" min="0" placeholder="4.500.000"></div></div>
+      </div>
+
+      <div class="fieldset-title"><span class="n">4</span>Objetivo profesional<span class="rule"></span></div>
+      <div class="field"><label for="objetivo">¿Qué quieres lograr profesionalmente?</label><textarea id="objetivo" placeholder="Ej. Especializarme en análisis de datos y trabajar en el sector financiero" required></textarea></div>
+
+      <button type="submit" class="btn-primary">
+        Generar Plan Financiero
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <div class="error-msg" id="error-msg">Por favor completa carrera, semestre, ingreso, horas y objetivo con valores válidos antes de continuar.</div>
+    </form>
+  </section>
+
+  <section class="results" id="resultados">
+
+    <div class="section-head" id="perfil"><span class="section-tag">A</span><h2>Perfil del estudiante</h2><div class="rule"></div></div>
+    <div class="profile-grid" id="profile-grid"></div>
+    <div class="essential-breakdown" id="essential-breakdown"></div>
+
+    <div class="section-head" id="presupuesto"><span class="section-tag">B</span><h2>Distribución inteligente del presupuesto</h2><div class="rule"></div></div>
+    <p class="section-sub">Ingreso neto − Gastos esenciales reales = Capacidad financiera disponible. Ajusta ocio y ahorro; el resto se recalcula al instante.</p>
+    <div class="card" style="overflow:hidden;">
+      <div class="deficit-banner" id="deficit-banner"></div>
+      <div class="limited-banner" id="limited-banner"></div>
+      <div class="budget-layout">
+        <div class="ring-wrap">
+          <div class="ring" id="budget-ring"><div class="ring-center"><div class="lbl">Ingreso neto</div><div class="amt" id="ring-total">$0</div></div></div>
+        </div>
+        <div class="legend" id="budget-legend"></div>
+      </div>
+      <div class="sliders-card" id="sliders-card">
+        <div class="slider-block">
+          <div class="slider-top"><span class="name">🎉 Ocio / libre disposición</span><span class="val" id="ocio-val">10%</span></div>
+          <input type="range" id="ocio-slider" min="2" max="15" step="1" value="10">
+          <div class="slider-range-labels"><span>Mín. 2%</span><span>Máx. 15%</span></div>
+          <div class="slider-warning" id="ocio-warning">Se recomienda no destinar más del 15% del presupuesto disponible al ocio para mantener una planificación financiera equilibrada.</div>
+        </div>
+        <div class="slider-block">
+          <div class="slider-top"><span class="name">🐖 Ahorro (emergencia + general)</span><span class="val" id="ahorro-val">20%</span></div>
+          <input type="range" id="ahorro-slider" min="5" max="30" step="1" value="20">
+          <div class="slider-range-labels"><span>Mín. 5%</span><span>Máx. 30%</span></div>
+          <div class="slider-warning" id="ahorro-warning">Un porcentaje de ahorro inferior al 10% puede dificultar la construcción de estabilidad financiera a largo plazo.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head" id="diagnostico"><span class="section-tag">C</span><h2>Diagnóstico de salud financiera</h2><div class="rule"></div></div>
+    <div class="card diag-card">
+      <div class="diag-badge" id="diag-badge"><div class="icon" id="diag-icon">●</div><div class="label" id="diag-label">—</div></div>
+      <div class="diag-reasons">
+        <h3>¿Por qué esta clasificación?</h3>
+        <ul id="diag-reasons"></ul>
+        <div class="diag-metrics" id="diag-metrics"></div>
+      </div>
+    </div>
+
+    <div class="section-head"><span class="section-tag">D</span><h2>Recomendaciones financieras</h2><div class="rule"></div></div>
+    <div class="tips-grid" id="tips-grid"></div>
+
+    <div class="section-head" id="ahorro-tipos"><span class="section-tag">E</span><h2>Tres formas de ahorro, tres propósitos distintos</h2><div class="rule"></div></div>
+    <p class="section-sub">Mezclar estos conceptos es el error más común al presupuestar. Aquí están separados, con su propio monto y su propia razón de ser.</p>
+    <div class="card savings-types" id="savings-types"></div>
+
+    <div class="section-head"><span class="section-tag">E1</span><h2>Tu meta financiera personal</h2><div class="rule"></div></div>
+    <div class="card" id="meta-card"></div>
+
+    <div class="section-head" id="fondo-educativo"><span class="section-tag">F</span><h2>Fondo educativo</h2><div class="rule"></div></div>
+    <div class="card edu-layout">
+      <div class="edu-amount"><span class="lbl">Monto sugerido / mes</span><span class="big" id="edu-amount">$0</span><span class="sub" id="edu-pct-label">0% de tu capacidad disponible</span></div>
+      <div class="edu-text">
+        <h3>¿Por qué destinar dinero a tu formación?</h3>
+        <p id="edu-justification"></p>
+        <blockquote>“Invertir es poner a trabajar tu dinero con el objetivo de que crezca en el futuro: construir un patrimonio, emprender un negocio o asegurar una buena educación para ti.” — Guía Jóvenes: manejo de dinero</blockquote>
+      </div>
+    </div>
+
+    <div class="section-head" id="certificaciones"><span class="section-tag">G</span><h2>Certificaciones y cursos recomendados</h2><div class="rule"></div></div>
+    <div class="card cert-list" id="cert-list"></div>
+
+    <div class="section-head" id="inversion"><span class="section-tag">H</span><h2>Inversión</h2><div class="rule"></div></div>
+    <div class="card" style="overflow:hidden;" id="invest-container"></div>
+
+    <div class="section-head" id="calculo"><span class="section-tag">I</span><h2>¿Cómo se calculó tu plan?</h2><div class="rule"></div></div>
+    <p class="section-sub">Transparencia total: así se construyó cada cifra que viste arriba.</p>
+    <div class="card calc-steps" id="calc-steps"></div>
+
+    <div class="reflect">
+      <h3>🧭 Nota pedagógica sobre este plan</h3>
+      <p id="reflect-text"></p>
+      <p id="reflect-text-2"></p>
+      <div class="sources-strip" id="sources-strip"></div>
+    </div>
+
+  </section>
+</main>
+
+<footer class="site">Asistente Financiero para Estudiantes Universitarios — Plan generado con base en material de educación financiera del proyecto, adaptado al contexto colombiano.</footer>
+
+<script>
+(function(){
+  const form = document.getElementById('perfil-form');
+  const errorMsg = document.getElementById('error-msg');
+  const results = document.getElementById('resultados');
+  let state = null;
+
+  function moneyShort(n){ return '$' + Math.round(n).toLocaleString('es-CO'); }
+  function moneyCOP(n){ return moneyShort(n) + ' COP'; }
+  function pct(n){ return n.toFixed(1) + '%'; }
+  function iconCheck(){ return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'; }
+
+  // ---------------- Vivienda field toggling ----------------
+  const viviendaTipo = document.getElementById('vivienda_tipo');
+  const viviendaWrap = document.getElementById('vivienda_monto_wrap');
+  const viviendaLabel = document.getElementById('vivienda_monto_label');
+  function refreshVivienda(){
+    const val = viviendaTipo.value;
+    if(val === 'arriendo'){ viviendaWrap.style.display = 'block'; viviendaLabel.textContent = 'Valor mensual de arriendo'; }
+    else if(val === 'aporte'){ viviendaWrap.style.display = 'block'; viviendaLabel.textContent = 'Aporte mensual al hogar'; }
+    else { viviendaWrap.style.display = 'none'; }
+  }
+  viviendaTipo.addEventListener('change', refreshVivienda);
+  refreshVivienda();
+
+  // ---------------- Certification bank ----------------
+  const certBank = {
+    tecnologia: [
+      {t:'Fundamentos de análisis de datos y hojas de cálculo avanzadas', d:'Base transversal para casi cualquier rol técnico o analítico.', p:'alta', minSem:1},
+      {t:'Certificación en un lenguaje de programación aplicado a tu área', d:'Prioriza el lenguaje más usado en tu especialidad (datos, web, automatización).', p:'alta', minSem:3},
+      {t:'Curso de control de versiones y trabajo colaborativo en proyectos', d:'Herramienta estándar en cualquier equipo de desarrollo o análisis.', p:'media', minSem:4},
+      {t:'Preparación de portafolio técnico para prácticas o primer empleo', d:'A partir de semestres avanzados conviene mostrar proyectos aplicados, no solo teoría.', p:'alta', minSem:7},
+    ],
+    negocios: [
+      {t:'Certificación en gestión de proyectos (fundamentos)', d:'Habilidad muy valorada para liderar iniciativas desde tu primer empleo.', p:'alta', minSem:4},
+      {t:'Curso de Excel / hojas de cálculo para análisis financiero', d:'Herramienta base para presupuestos, indicadores y reportes.', p:'alta', minSem:1},
+      {t:'Fundamentos de emprendimiento y modelo de negocio', d:'Útil si tu objetivo incluye crear tu propio proyecto.', p:'media', minSem:1},
+      {t:'Preparación para prácticas empresariales o pasantía', d:'Consolida tu perfil de cara a la etapa final de la carrera.', p:'media', minSem:7},
+    ],
+    finanzas: [
+      {t:'Certificación en análisis financiero o administración de portafolios', d:'Profundiza la base técnica sobre riesgo, rentabilidad e inversión en el mercado colombiano (BVC).', p:'alta', minSem:5, src:'Administración de Portafolios · AMV'},
+      {t:'Curso de indicadores económicos y mercados financieros', d:'Te ayuda a interpretar el contexto en el que se mueve el dinero.', p:'alta', minSem:3},
+      {t:'Excel financiero avanzado', d:'Modelamiento de flujos de caja, presupuestos e indicadores.', p:'media', minSem:1},
+      {t:'Certificación AMV (Operador o Asesor) como meta de mediano plazo', d:'Credencial reconocida en el sector financiero colombiano para roles de inversión.', p:'media', minSem:8, src:'Administración de Portafolios · AMV'},
+    ],
+    derecho: [
+      {t:'Curso de redacción de documentos legales', d:'Habilidad práctica exigida desde las primeras prácticas profesionales.', p:'alta', minSem:3},
+      {t:'Certificación en resolución de conflictos o conciliación', d:'Diferenciador cada vez más solicitado en el sector.', p:'media', minSem:6},
+      {t:'Curso de herramientas ofimáticas y gestión documental', d:'Optimiza la organización de expedientes y evidencia.', p:'base', minSem:1},
+      {t:'Preparación para judicatura o práctica jurídica final', d:'Etapa clave en semestres avanzados de la carrera.', p:'alta', minSem:9},
+    ],
+    salud: [
+      {t:'Certificación en soporte vital básico / primeros auxilios', d:'Requisito frecuente y de alto valor práctico en el sector salud.', p:'alta', minSem:1},
+      {t:'Curso de bioseguridad y protocolos clínicos actualizados', d:'Mantiene tu formación alineada a estándares vigentes.', p:'alta', minSem:3},
+      {t:'Curso de atención centrada en el paciente y comunicación', d:'Habilidad blanda clave para tu desempeño clínico.', p:'media', minSem:1},
+      {t:'Preparación para rotaciones o internado', d:'Fortalece tu perfil clínico antes de la práctica final.', p:'alta', minSem:8},
+    ],
+    marketing: [
+      {t:'Certificación en marketing digital y analítica web', d:'Base indispensable para cualquier rol de mercadeo actual.', p:'alta', minSem:2},
+      {t:'Curso de manejo de datos y métricas de desempeño', d:'Te permite argumentar decisiones con evidencia, no solo intuición.', p:'alta', minSem:4},
+      {t:'Curso de diseño y comunicación visual básica', d:'Facilita tu colaboración con equipos creativos.', p:'media', minSem:1},
+      {t:'Portafolio de campañas o proyectos aplicados', d:'Diferenciador clave al buscar prácticas o primer empleo.', p:'media', minSem:7},
+    ],
+    diseno: [
+      {t:'Certificación en herramientas de diseño digital', d:'Estándar de entrada para portafolios competitivos.', p:'alta', minSem:1},
+      {t:'Curso de experiencia de usuario (UX) aplicada', d:'Diferenciador muy valorado en proyectos digitales.', p:'alta', minSem:4},
+      {t:'Curso de gestión de proyectos creativos', d:'Te prepara para liderar entregables con clientes reales.', p:'media', minSem:5},
+      {t:'Portafolio profesional para mostrar a clientes o empleadores', d:'Pieza central de tu perfil en la recta final de la carrera.', p:'alta', minSem:7},
+    ],
+    educacion: [
+      {t:'Certificación en herramientas digitales para la enseñanza', d:'Cada vez más exigida en entornos educativos híbridos.', p:'alta', minSem:2},
+      {t:'Curso de diseño curricular y evaluación por competencias', d:'Fortalece tu perfil pedagógico desde la práctica.', p:'alta', minSem:4},
+      {t:'Curso de atención a la diversidad en el aula', d:'Habilidad cada vez más valorada en instituciones educativas.', p:'media', minSem:1},
+      {t:'Preparación para práctica docente', d:'Etapa decisiva antes de tu grado.', p:'alta', minSem:8},
+    ],
+    general: [
+      {t:'Curso de herramientas ofimáticas y hojas de cálculo', d:'Base transversal útil sin importar tu carrera.', p:'alta', minSem:1},
+      {t:'Curso de gestión del tiempo y productividad personal', d:'Especialmente valioso si compaginas estudio y trabajo.', p:'media', minSem:1},
+      {t:'Certificación introductoria en tu área de interés profesional', d:'Primer paso concreto hacia tu objetivo declarado.', p:'media', minSem:2},
+      {t:'Preparación de hoja de vida y portafolio de proyectos', d:'Fortalece tu perfil de cara a prácticas o primer empleo.', p:'alta', minSem:7},
+    ],
+  };
+  const idiomasSinFronteras = {t:'Segundo idioma con el programa Idiomas sin Fronteras', d:'Exenciones parciales de matrícula en universidades y centros de idiomas para fortalecer un segundo idioma.', p:'alta', src:'Guía de Servicios · ICETEX'};
+  const icetexEducativo = {t:'Crédito educativo ICETEX como respaldo para tu formación', d:'Línea de financiamiento pensada para estudiantes colombianos que necesitan apoyo para matrícula o formación complementaria.', p:'media', src:'Guía de Servicios · ICETEX'};
+
+  function detectCareerField(carrera){
+    const c = carrera.toLowerCase();
+    const map = [
+      {k:['sistemas','software','ingenier','tecnolog','informát','informat','datos','computa'], f:'tecnologia'},
+      {k:['administra','negocio','gestión','gestion','empresa'], f:'negocios'},
+      {k:['contad','financ','econom'], f:'finanzas'},
+      {k:['derecho','abogac','jurid'], f:'derecho'},
+      {k:['medicin','enfermer','salud','odontolog','nutric','fisioterap'], f:'salud'},
+      {k:['marketing','publicidad','mercadeo'], f:'marketing'},
+      {k:['diseñ','diseno','arquitect','comunicación visual'], f:'diseno'},
+      {k:['educa','pedagog','licenciatura en'], f:'educacion'},
+    ];
+    for(const row of map){ if(row.k.some(kw => c.includes(kw))) return row.f; }
+    return 'general';
+  }
+
+  function buildCertifications(carrera, semestre, objetivo){
+    const field = detectCareerField(carrera);
+    const bank = certBank[field] || certBank.general;
+    const ot = objetivo.toLowerCase();
+    let list = bank.filter(c => semestre >= c.minSem).map(c => ({...c}));
+    if(list.length < 3){ list = bank.slice(0,3).map(c => ({...c})); }
+    if(ot.includes('idioma') || ot.includes('internacional') || ot.includes('extranjero') || ot.includes('ingles') || ot.includes('inglés')){ list.unshift({...idiomasSinFronteras, p:'alta'}); }
+    else { list.push({...idiomasSinFronteras, p:'media'}); }
+    const eduKeywords = ['maestr','posgrado','especializ','diplomado','mba'];
+    if(eduKeywords.some(k => ot.includes(k))){ list.push(icetexEducativo); }
+    if(ot.includes('emprend') || ot.includes('negocio propio')){ list.unshift({t:'Fundamentos de emprendimiento y modelo de negocio', d:'Se refuerza porque tu objetivo profesional está orientado a crear tu propio negocio.', p:'alta'}); }
+    const seen = new Set();
+    list = list.filter(c => { if(seen.has(c.t)) return false; seen.add(c.t); return true; }).slice(0,6);
+    return list;
+  }
+
+  const allTips = [
+    {t:'Trata tu ahorro como si fuera un gasto fijo', d:'Sepáralo apenas recibas tu ingreso, no esperes a fin de mes a ver qué sobra: así es más fácil sostenerlo en el tiempo.', s:'Educación Financiera · BCRA'},
+    {t:'Vigila tus "gastos hormiga"', d:'Son pequeños gastos casi imperceptibles que hacemos por impulso. Registrarlos a diario te ayuda a identificarlos y reducirlos.', s:'Educación Financiera · BCRA'},
+    {t:'Antes de gastar, pregúntate si puede posponerse', d:'No todo lo que quieres comprar es urgente. Diferenciar entre necesidad e impulso protege tu presupuesto del mes.', s:'Educación Financiera · BCRA'},
+    {t:'Nunca inviertas el dinero de tus gastos básicos', d:'Toda inversión implica riesgo. Si eres nuevo invirtiendo, empieza con montos pequeños y opciones de bajo riesgo.', s:'Guía Jóvenes: manejo de dinero'},
+    {t:'Prioriza tus propios ahorros antes que un préstamo', d:'Si necesitas cubrir un imprevisto, tus ahorros son la opción más económica. Usa el crédito de forma responsable y como último recurso.', s:'Guía Jóvenes: manejo de dinero'},
+    {t:'Antes de tomar un crédito, pregúntate: ¿lo necesito, puedo pagarlo y cuánto cuesta?', d:'Evaluar estas tres preguntas evita caer en sobreendeudamiento: cuando las deudas superan tu capacidad real de pago.', s:'Educación Financiera · BCRA'},
+    {t:'Cuidado con las decisiones impulsivas al gastar', d:'Nuestras decisiones financieras no siempre son racionales: los sesgos cognitivos nos llevan a comprar por impulso o por presión social.', s:'Psicología del consumidor'},
+    {t:'Define metas de ahorro concretas, medibles y con fecha', d:'Una meta clara ("cuánto", "para cuándo" y "cómo") sostiene tu motivación mucho más que ahorrar "lo que sobre".', s:'Ahorro e inversión'},
+  ];
+  const habitBank = [
+    'Fija con anticipación cuánto vas a ahorrar, para cuándo y con qué frecuencia: es la base de todo plan de ahorro sostenible.',
+    'Sé constante: la disciplina en el cumplimiento de tu meta es más determinante que el monto inicial.',
+    'Usa productos financieros para guardar tu dinero en vez de tenerlo en efectivo: reduce la tentación de gastarlo.',
+    'Registra tus movimientos periódicamente para saber si tu presupuesto va en superávit o en déficit, y ajusta a tiempo.',
+  ];
+
+  const investBank = {
+    conservador: [
+      {n:'Cuenta de ahorro con rendimientos', risk:'Bajo', complexity:'Baja', liq:'Alta liquidez', d:'Producto bancario básico. Prioriza la disponibilidad del dinero sobre la rentabilidad.', adv:'Alta liquidez y bajo riesgo; ideal para tu fondo de imprevistos.', risks:'Rentabilidad muy baja frente a otras opciones; puede perder poder adquisitivo frente a la inflación.'},
+      {n:'CDT (Certificado de Depósito a Término)', risk:'Bajo', complexity:'Baja', liq:'Liquidez limitada', d:'Depósito a un plazo fijo pactado con una entidad financiera, con tasa de interés conocida desde el inicio.', adv:'Instrumento de renta fija de bajo riesgo, tasa pactada desde el inicio.', risks:'El dinero queda comprometido durante el plazo pactado; retirarlo antes puede tener penalidades.'},
+      {n:'Fondo de Inversión Colectiva (FIC) de renta fija', risk:'Bajo-medio', complexity:'Media', liq:'Media', d:'Un administrador profesional reúne el dinero de varios inversionistas y lo invierte principalmente en bonos, CDT y papeles del gobierno.', adv:'Diversificación y gestión profesional con montos de entrada accesibles.', risks:'Riesgo de tasa de interés y de crédito de los emisores en los que invierte el fondo.'},
+    ],
+    moderado: [
+      {n:'FIC mixto (renta fija + renta variable)', risk:'Medio', complexity:'Media', liq:'Media', d:'Combina instrumentos de bajo riesgo con una porción de acciones, buscando equilibrio entre riesgo y rentabilidad.', adv:'Diversifica entre categorías de activos sin que tengas que elegir cada instrumento tú mismo.', risks:'Su valor puede fluctuar más que un fondo 100% de renta fija; no hay garantía de rentabilidad.'},
+      {n:'Bonos corporativos', risk:'Medio', complexity:'Media', liq:'Media-baja', d:'Títulos de deuda emitidos por empresas privadas que pagan una tasa de interés pactada.', adv:'Rentabilidad usualmente mayor que un CDT, con riesgo controlado si el emisor tiene buena calificación crediticia.', risks:'Riesgo de crédito: si la empresa emisora tiene problemas financieros, puede afectar el pago.'},
+    ],
+    agresivo: [
+      {n:'Acciones en la Bolsa de Valores de Colombia (BVC)', risk:'Alto', complexity:'Alta', liq:'Media', d:'Comprar una acción significa adquirir una participación en una empresa que cotiza en bolsa, por ejemplo, en el índice COLCAP.', adv:'Mayor potencial de crecimiento en el largo plazo frente a instrumentos de renta fija.', risks:'Alta volatilidad: el precio puede subir o bajar de forma importante en el corto plazo. Requiere horizonte largo.'},
+      {n:'ETF (fondos indexados / fondos bursátiles)', risk:'Medio-alto', complexity:'Media-alta', liq:'Media', d:'Fondos que replican el comportamiento de un índice de referencia (por ejemplo, el COLCAP), diversificando en muchas compañías con una sola operación.', adv:'Diversificación instantánea, costos de administración generalmente más bajos que la gestión activa.', risks:'Sigue las caídas del mercado igual que las subidas; no elimina el riesgo, lo diversifica.'},
+    ],
+  };
+
+  function riskProfileScore(disponibleRatio, hasDebt, horas, semestre, tieneFondo){
+    let score = 0;
+    if(hasDebt) score -= 1;
+    if(tieneFondo) score += 1;
+    if(disponibleRatio >= 0.30) score += 1;
+    if(disponibleRatio < 0.10) score -= 1;
+    if(horas >= 25) score += 1;
+    if(horas < 10) score -= 1;
+    if(Math.max(0, 10 - semestre) >= 6) score += 1;
+    if(score <= -1) return 'conservador';
+    if(score >= 3) return 'agresivo';
+    return 'moderado';
+  }
+
+  function availabilityLabel(horas){
+    if(horas < 15) return {text:'Baja disponibilidad de tiempo', bg:'var(--coral-light)', color:'var(--coral)'};
+    if(horas <= 25) return {text:'Disponibilidad equilibrada', bg:'var(--amber-light)', color:'var(--gold-dark)'};
+    return {text:'Alta carga laboral', bg:'var(--teal-light)', color:'var(--teal)'};
+  }
+
+  function metaPriority(months){
+    if(months <= 6) return {label:'Alta (corto plazo)', cls:'prio-alta'};
+    if(months <= 18) return {label:'Media', cls:'prio-media'};
+    return {label:'Baja (largo plazo)', cls:'prio-baja'};
+  }
+
+  // ---------------- Core: build derived numbers from raw inputs ----------------
+  function buildBase(raw){
+    const viviendaMonto = (raw.viviendaTipo === 'arriendo' || raw.viviendaTipo === 'aporte') ? raw.viviendaMontoInput : 0;
+    const totalEssential = viviendaMonto + raw.alimentacion + raw.transporte + raw.servicios + raw.internet + raw.deudas;
+    const disponible = raw.ingreso - totalEssential;
+    const disponibleRatio = disponible / raw.ingreso;
+    const deudaRatio = raw.deudas / raw.ingreso;
+    const essentialRatio = totalEssential / raw.ingreso;
+    const capacidadLimitada = disponible > 0 && disponibleRatio < 0.15;
+
+    let diagLevel, diagReasons = [];
+    if(disponible <= 0 || essentialRatio > 0.75 || deudaRatio > 0.35){
+      diagLevel = 'riesgo';
+      if(disponible <= 0) diagReasons.push('Tus gastos esenciales superan o igualan tu ingreso mensual: no queda margen para ahorrar ni cubrir imprevistos.');
+      if(essentialRatio > 0.75 && disponible > 0) diagReasons.push(`Tus gastos esenciales representan ${(essentialRatio*100).toFixed(0)}% de tu ingreso, un nivel muy alto que deja poco margen de maniobra.`);
+      if(deudaRatio > 0.35) diagReasons.push(`Tus cuotas de deuda representan ${(deudaRatio*100).toFixed(0)}% de tu ingreso: cuando las obligaciones se acercan o superan la capacidad de pago, se habla de sobreendeudamiento.`);
+    } else if(essentialRatio > 0.55 || deudaRatio > 0.20 || capacidadLimitada){
+      diagLevel = 'precaucion';
+      if(essentialRatio > 0.55) diagReasons.push(`Tus gastos esenciales representan ${(essentialRatio*100).toFixed(0)}% de tu ingreso. Es manejable, pero deja poco espacio para ahorro e imprevistos.`);
+      if(deudaRatio > 0.20) diagReasons.push(`Tus cuotas de deuda representan ${(deudaRatio*100).toFixed(0)}% de tu ingreso. Vale la pena vigilar que no crezcan más antes de asumir nuevas obligaciones.`);
+      if(capacidadLimitada) diagReasons.push(`Tu capacidad financiera disponible (${moneyShort(disponible)}) es reducida frente a tu ingreso, lo que limita tu margen ante imprevistos: detectamos "capacidad de ahorro limitada".`);
+    } else {
+      diagLevel = 'saludable';
+      diagReasons.push(`Tus gastos esenciales representan ${(essentialRatio*100).toFixed(0)}% de tu ingreso, dejando un margen razonable para ahorro, formación e inversión.`);
+      diagReasons.push(raw.deudas > 0 ? `Tus obligaciones de deuda (${(deudaRatio*100).toFixed(0)}% del ingreso) están en un nivel controlado.` : 'No reportas deudas activas, lo cual facilita mantener el control de tu presupuesto.');
+      diagReasons.push('Recuerda que la salud financiera se sostiene con el monitoreo constante de tus cuentas, no es un estado permanente.');
+    }
+
+    const investmentAllowed = diagLevel === 'saludable' && !capacidadLimitada && (raw.tieneFondo || disponibleRatio >= 0.25) && deudaRatio <= 0.20;
+
+    return {viviendaMonto, totalEssential, disponible, disponibleRatio, deudaRatio, essentialRatio, capacidadLimitada, diagLevel, diagReasons, investmentAllowed};
+  }
+
+  function computeDistribution(raw, base, ocioPct, ahorroPct){
+    const R = Math.max(0, 100 - ocioPct - ahorroPct);
+    const ot = raw.objetivo.toLowerCase();
+    const wantsEdu = ['maestr','posgrado','especializ','certificaci','diplomado','emprend','negocio propio','mba','curso'].some(k => ot.includes(k));
+    const hasMeta = raw.metaValor > 0;
+
+    let metaW, eduW, investW;
+    if(base.capacidadLimitada){
+      metaW = hasMeta ? 55 : 0; eduW = 45; investW = 0;
+    } else {
+      metaW = hasMeta ? 30 : 0;
+      eduW = 40 + (wantsEdu ? 10 : 0);
+      investW = base.investmentAllowed ? 30 : 0;
+    }
+    const sumW = metaW + eduW + investW;
+    const metaPct = sumW > 0 ? R * metaW / sumW : 0;
+    const eduPct = sumW > 0 ? R * eduW / sumW : 0;
+    const investPct = sumW > 0 ? R * investW / sumW : 0;
+
+    const fondoShare = base.capacidadLimitada ? 0.85 : (raw.tieneFondo ? 0.3 : 0.7);
+    const fondoEmergenciaPct = ahorroPct * fondoShare;
+    const ahorroGeneralPct = ahorroPct * (1 - fondoShare);
+
+    return {ocioPct, ahorroPct, fondoEmergenciaPct, ahorroGeneralPct, metaPct, eduPct, investPct, wantsEdu, hasMeta};
+  }
+
+  function defaultSliders(raw, base){
+    let ocio = horasBucket(raw.horas) === 'alta' ? 7 : (horasBucket(raw.horas) === 'baja' ? 9 : 10);
+    let ahorro = horasBucket(raw.horas) === 'alta' ? 24 : (horasBucket(raw.horas) === 'baja' ? 16 : 20);
+    if(base.capacidadLimitada){ ocio = 2; ahorro = 28; }
+    if(base.disponible <= 0){ ocio = 2; ahorro = 5; }
+    return {ocio: clamp(ocio,2,15), ahorro: clamp(ahorro,5,30)};
+  }
+  function horasBucket(h){ if(h<15) return 'baja'; if(h>25) return 'alta'; return 'media'; }
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  // ---------------- Render ----------------
+  function renderAll(){
+    const raw = state.raw, base = state.base;
+    const ocioPct = parseInt(document.getElementById('ocio-slider').value, 10);
+    const ahorroPct = parseInt(document.getElementById('ahorro-slider').value, 10);
+    document.getElementById('ocio-val').textContent = ocioPct + '%';
+    document.getElementById('ahorro-val').textContent = ahorroPct + '%';
+    document.getElementById('ocio-warning').classList.toggle('show', ocioPct >= 13);
+    const ahorroWarn = document.getElementById('ahorro-warning');
+    ahorroWarn.classList.toggle('show', ahorroPct < 10);
+
+    const dist = computeDistribution(raw, base, ocioPct, ahorroPct);
+    state.dist = dist;
+
+    // --- Profile ---
+    const avail = availabilityLabel(raw.horas);
+    const viviendaLabelText = {arriendo:'Arriendo', familia:'Con familia (sin pago)', aporte:'Con familia (aporta)', propia:'Vivienda propia'}[raw.viviendaTipo];
+    document.getElementById('profile-grid').innerHTML = `
+      <div class="profile-cell"><div class="k">Carrera</div><div class="v">${raw.carrera}</div></div>
+      <div class="profile-cell"><div class="k">Semestre</div><div class="v mono">${raw.semestre}</div></div>
+      <div class="profile-cell"><div class="k">Ingreso mensual neto</div><div class="v mono">${moneyShort(raw.ingreso)}</div></div>
+      <div class="profile-cell"><div class="k">Horas de trabajo / sem.</div><div class="v mono">${raw.horas} h<div class="avail-badge" style="background:${avail.bg}; color:${avail.color}">${avail.text}</div></div></div>
+    `;
+    document.getElementById('essential-breakdown').innerHTML = `
+      <div class="eb-cell"><div class="k">Vivienda (${viviendaLabelText})</div><div class="v">${moneyShort(base.viviendaMonto)}</div></div>
+      <div class="eb-cell"><div class="k">Alimentación</div><div class="v">${moneyShort(raw.alimentacion)}</div></div>
+      <div class="eb-cell"><div class="k">Transporte</div><div class="v">${moneyShort(raw.transporte)}</div></div>
+      <div class="eb-cell"><div class="k">Servicios públicos</div><div class="v">${moneyShort(raw.servicios)}</div></div>
+      <div class="eb-cell"><div class="k">Internet / telefonía</div><div class="v">${moneyShort(raw.internet)}</div></div>
+      <div class="eb-cell"><div class="k">Deudas / obligaciones</div><div class="v">${moneyShort(raw.deudas)}</div></div>
+    `;
+
+    // --- B. Budget ring ---
+    const deficitBanner = document.getElementById('deficit-banner');
+    const limitedBanner = document.getElementById('limited-banner');
+    const slidersCard = document.getElementById('sliders-card');
+    let cats;
+    if(base.disponible <= 0){
+      deficitBanner.style.display = 'block';
+      deficitBanner.textContent = `Tus gastos esenciales (${moneyShort(base.totalEssential)}) superan o igualan tu ingreso neto (${moneyShort(raw.ingreso)}). No hay capacidad financiera disponible: la prioridad es ajustar gastos o buscar ingresos adicionales antes de pensar en ahorro, educación o inversión.`;
+      limitedBanner.style.display = 'none';
+      slidersCard.style.display = 'none';
+      cats = [{name:'Gastos esenciales', desc:'Vivienda, alimentación, transporte, servicios, deudas', pct:100, color:'var(--ink)'}];
+    } else {
+      deficitBanner.style.display = 'none';
+      slidersCard.style.display = 'block';
+      if(base.capacidadLimitada){
+        limitedBanner.style.display = 'block';
+        limitedBanner.innerHTML = `<b>Capacidad de ahorro limitada</b>Tu capacidad financiera disponible (${moneyShort(base.disponible)}) es baja frente a tu ingreso. Priorizamos así:<ol><li>Gastos esenciales</li><li>Fondo de emergencia</li><li>Metas financieras</li><li>Educación</li><li>Inversión (pausada por ahora)</li></ol>`;
+      } else {
+        limitedBanner.style.display = 'none';
+      }
+      const essentialPct = base.essentialRatio * 100;
+      const dispPct = 100 - essentialPct;
+      const pctOfIncome = raw_pct => dispPct * raw_pct / 100;
+      cats = [
+        {name:'Gastos esenciales', desc:'Vivienda, alimentación, transporte, servicios, deudas', pct:essentialPct, color:'var(--ink)'},
+        {name:'Fondo de emergencia', desc:'Prioridad ante imprevistos', pct:pctOfIncome(dist.fondoEmergenciaPct), color:'var(--coral)'},
+        {name:'Ahorro general', desc:'Reserva sin fin específico', pct:pctOfIncome(dist.ahorroGeneralPct), color:'var(--teal)'},
+        {name:'Meta financiera', desc:dist.hasMeta ? raw.metaNombre : 'Sin meta definida', pct:pctOfIncome(dist.metaPct), color:'#7C8FB0'},
+        {name:'Fondo educativo', desc:'Formación y certificaciones', pct:pctOfIncome(dist.eduPct), color:'var(--gold)'},
+        {name:'Inversión', desc: base.investmentAllowed ? 'Según tu perfil de riesgo' : 'Pausada por ahora', pct:pctOfIncome(dist.investPct), color:'#B7A6D9'},
+        {name:'Ocio / libre disposición', desc:'Tú decides este porcentaje', pct:pctOfIncome(dist.ocioPct), color:'#D8CBB0'},
+      ];
+    }
+    let gradientParts = []; let acc = 0;
+    cats.forEach(c => { const start = acc; const end = acc + c.pct; gradientParts.push(`${c.color} ${start}% ${end}%`); acc = end; });
+    document.getElementById('budget-ring').style.background = `conic-gradient(${gradientParts.join(',')})`;
+    document.getElementById('ring-total').textContent = moneyShort(raw.ingreso);
+    document.getElementById('budget-legend').innerHTML = cats.map(c => `
+      <div class="legend-item"><span class="swatch" style="background:${c.color}"></span>
+      <span><span class="legend-name">${c.name}</span><span class="legend-desc">${c.desc}</span></span>
+      <span class="legend-pct">${pct(c.pct)}</span><span class="legend-amt">${moneyShort(raw.ingreso * c.pct / 100)}</span></div>
+    `).join('');
+
+    // --- C. Diagnóstico ---
+    const diagConfig = {
+      saludable: {icon:'✓', label:'Saludable', bg:'var(--teal-light)', color:'var(--teal)'},
+      precaucion: {icon:'!', label:'Precaución', bg:'var(--amber-light)', color:'var(--gold-dark)'},
+      riesgo: {icon:'✕', label:'Riesgo financiero', bg:'var(--coral-light)', color:'var(--coral)'},
+    }[base.diagLevel];
+    const diagBadge = document.getElementById('diag-badge');
+    diagBadge.style.background = diagConfig.bg; diagBadge.style.color = diagConfig.color;
+    document.getElementById('diag-icon').textContent = diagConfig.icon;
+    document.getElementById('diag-label').textContent = diagConfig.label;
+    document.getElementById('diag-reasons').innerHTML = base.diagReasons.map(r => `<li>${r}</li>`).join('');
+    document.getElementById('diag-metrics').innerHTML = `
+      <div class="dmetric"><b>${(base.essentialRatio*100).toFixed(0)}%</b>gastos esenciales / ingreso</div>
+      <div class="dmetric"><b>${(base.deudaRatio*100).toFixed(0)}%</b>deudas / ingreso</div>
+      <div class="dmetric"><b>${moneyShort(Math.max(0,base.disponible))}</b>capacidad disponible</div>
+    `;
+
+    // --- D. Tips ---
+    document.getElementById('tips-grid').innerHTML = allTips.map((tip, i) => `
+      <div class="card tip-card"><div class="tip-num mono">${String(i+1).padStart(2,'0')}</div>
+      <div class="tip-body"><h3>${tip.t}</h3><p>${tip.d}</p><span class="tip-source">${tip.s}</span></div></div>
+    `).join('');
+
+    // --- E. Tres tipos de ahorro ---
+    const fondoAmt = base.disponible > 0 ? base.disponible * dist.fondoEmergenciaPct / 100 : 0;
+    const ahorroGralAmt = base.disponible > 0 ? base.disponible * dist.ahorroGeneralPct / 100 : 0;
+    const metaAmt = base.disponible > 0 ? base.disponible * dist.metaPct / 100 : 0;
+    document.getElementById('savings-types').innerHTML = `
+      <div class="savings-type">
+        <div class="st-head"><span class="st-dot" style="background:var(--coral)"></span><h4>Fondo de emergencia</h4></div>
+        <div class="st-amount">${moneyShort(fondoAmt)}</div>
+        <div class="st-pct">${pct(base.disponible>0 ? base.disponible*dist.fondoEmergenciaPct/100/raw.ingreso*100 : 0)} de tu ingreso</div>
+        <div class="st-desc">Dinero exclusivamente para imprevistos: pérdida de ingreso, salud, reparaciones urgentes. ${raw.tieneFondo ? 'Ya tienes uno, así que reforzamos otras prioridades.' : 'Es tu prioridad número uno hasta construir un colchón razonable.'}</div>
+      </div>
+      <div class="savings-type">
+        <div class="st-head"><span class="st-dot" style="background:#7C8FB0"></span><h4>Meta financiera personal</h4></div>
+        <div class="st-amount">${moneyShort(metaAmt)}</div>
+        <div class="st-pct">${pct(base.disponible>0 ? base.disponible*dist.metaPct/100/raw.ingreso*100 : 0)} de tu ingreso</div>
+        <div class="st-desc">${dist.hasMeta ? `Dinero con destino específico: "${raw.metaNombre}". Tiene fecha y monto objetivo, a diferencia del ahorro general.` : 'No definiste una meta. Puedes agregar una (computador, curso, viaje...) y este espacio se activará automáticamente.'}</div>
+      </div>
+      <div class="savings-type">
+        <div class="st-head"><span class="st-dot" style="background:var(--teal)"></span><h4>Ahorro general</h4></div>
+        <div class="st-amount">${moneyShort(ahorroGralAmt)}</div>
+        <div class="st-pct">${pct(base.disponible>0 ? base.disponible*dist.ahorroGeneralPct/100/raw.ingreso*100 : 0)} de tu ingreso</div>
+        <div class="st-desc">Reserva sin una finalidad inmediata: construye patrimonio y flexibilidad para decisiones futuras, más allá de emergencias o metas puntuales.</div>
+      </div>
+    `;
+
+    // --- E1. Meta card ---
+    const metaCardEl = document.getElementById('meta-card');
+    if(!dist.hasMeta){
+      metaCardEl.innerHTML = `<div class="meta-empty">Aún no registraste una meta financiera personal. Agrégala en el formulario (nombre + valor estimado) y aquí verás el ahorro mensual sugerido, el tiempo estimado y la prioridad.</div>`;
+    } else {
+      const months = metaAmt > 0 ? Math.ceil(raw.metaValor / metaAmt) : 0;
+      const prio = months > 0 ? metaPriority(months) : {label:'Sin datos suficientes', cls:'prio-media'};
+      const progressPct = Math.min(95, Math.max(4, months > 0 ? (100/months) : 4));
+      metaCardEl.innerHTML = `
+        <div class="meta-card">
+          <div class="meta-left">
+            <h3>${raw.metaNombre}</h3>
+            <div class="meta-cost">Meta financiera personal</div>
+            <div class="meta-stat"><span class="lbl">Valor objetivo</span><span class="val">${moneyShort(raw.metaValor)}</span></div>
+            <div class="meta-stat"><span class="lbl">Ahorro mensual sugerido</span><span class="val">${moneyShort(metaAmt)}</span></div>
+            <div class="meta-stat"><span class="lbl">Tiempo estimado</span><span class="val">${months > 0 ? months + ' meses' : 'No aplica este mes'}</span></div>
+          </div>
+          <div class="meta-right">
+            <h4>Prioridad sugerida</h4>
+            <span class="meta-priority ${prio.cls}">${prio.label}</span>
+            <div class="meta-progress-track"><div class="meta-progress-fill" style="width:${progressPct}%"></div></div>
+            <p style="font-size:12px; color:var(--muted); margin:0;">Con un ahorro constante de ${moneyShort(metaAmt)} al mes, alcanzarías "${raw.metaNombre}" en aproximadamente ${months > 0 ? months : '—'} meses. Ajusta el control deslizante de ahorro arriba para acelerar o desacelerar esta meta.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- F. Fondo educativo ---
+    const eduAmount = base.disponible > 0 ? base.disponible * dist.eduPct / 100 : 0;
+    document.getElementById('edu-amount').textContent = moneyShort(eduAmount);
+    document.getElementById('edu-pct-label').textContent = base.disponible > 0 ? `${dist.eduPct.toFixed(1)}% de tu capacidad financiera disponible` : 'Sin capacidad disponible este mes';
+    document.getElementById('edu-justification').textContent = eduAmount > 0
+      ? (dist.wantsEdu
+        ? `Como tu objetivo profesional está directamente ligado a formación adicional, reforzamos este fondo. Acumulando ${moneyShort(eduAmount)} al mes, en un semestre (6 meses) reunirás aproximadamente ${moneyShort(eduAmount*6)} para invertir en cursos, certificaciones o un programa de especialización.`
+        : `La educación superior y la formación continua se consideran una de las inversiones con mejor retorno: mejores oportunidades laborales, salarios más altos y menor riesgo de desempleo. Acumulando ${moneyShort(eduAmount)} al mes, en un semestre (6 meses) reunirás aproximadamente ${moneyShort(eduAmount*6)} para tu desarrollo profesional.`)
+      : 'Este mes no hay capacidad financiera disponible para destinar a formación. En cuanto ajustes tus gastos esenciales o incrementes tu ingreso, retoma este fondo.';
+
+    // --- G. Certificaciones ---
+    const certs = buildCertifications(raw.carrera, raw.semestre, raw.objetivo);
+    document.getElementById('cert-list').innerHTML = certs.map(c => `
+      <div class="cert-row"><span class="cert-priority priority-${c.p}">${c.p === 'alta' ? 'Prioridad alta' : c.p === 'media' ? 'Prioridad media' : 'Base'}</span>
+      <span><span class="cert-title">${c.t}</span><span class="cert-desc">${c.d}</span>${c.src ? `<span class="cert-source">${c.src}</span>` : ''}</span>
+      <span class="cert-tag">Semestre ${raw.semestre}</span></div>
+    `).join('') + `<div class="cert-why">Seleccionado dinámicamente a partir de tu carrera (${raw.carrera}), tu semestre actual (${raw.semestre}) y las palabras clave de tu objetivo profesional.</div>`;
+
+    // --- H. Inversión (condicionada) ---
+    const investContainer = document.getElementById('invest-container');
+    if(!base.investmentAllowed){
+      let reasons = [];
+      if(base.disponible <= 0) reasons.push('No tienes capacidad financiera disponible este mes.');
+      if(base.capacidadLimitada) reasons.push('Tu capacidad de ahorro actual es limitada frente a tu ingreso.');
+      if(base.diagLevel !== 'saludable' && base.disponible > 0 && !base.capacidadLimitada) reasons.push('Tu diagnóstico de salud financiera está en ' + (base.diagLevel === 'precaucion' ? 'Precaución' : 'Riesgo') + '.');
+      if(base.deudaRatio > 0.20) reasons.push('Tus obligaciones de deuda representan una porción considerable de tu ingreso.');
+      if(!raw.tieneFondo && base.disponibleRatio < 0.25) reasons.push('Aún no cuentas con un fondo de emergencia consolidado.');
+      investContainer.innerHTML = `
+        <div class="invest-blocked">
+          <span class="ico">🛈</span>
+          <div>
+            <h3>Todavía no es el momento de invertir</h3>
+            <p>Actualmente es más recomendable fortalecer tu estabilidad financiera y construir un fondo de emergencia antes de destinar recursos a inversión.</p>
+            <ul>${reasons.map(r => `<li>${r}</li>`).join('')}</ul>
+          </div>
+        </div>`;
+    } else {
+      const profile = riskProfileScore(base.disponibleRatio, raw.deudas > 0, raw.horas, raw.semestre, raw.tieneFondo);
+      const profileConfig = {
+        conservador: {label:'Conservador', bg:'var(--teal-light)', color:'var(--teal)', desc:'Prioriza preservar tu capital y mantener liquidez. Punto de partida recomendado mientras terminas de consolidar tu fondo de emergencia.'},
+        moderado: {label:'Moderado', bg:'var(--amber-light)', color:'var(--gold-dark)', desc:'Buscas equilibrio entre seguridad y crecimiento, combinando instrumentos de bajo riesgo con una porción moderada de renta variable.'},
+        agresivo: {label:'Agresivo', bg:'var(--coral-light)', color:'var(--coral)', desc:'Tu situación actual (ingreso disponible, estabilidad laboral y horizonte de tiempo) te permitiría tolerar más volatilidad a cambio de mayor potencial de crecimiento.'},
+      }[profile];
+      const vehicles = investBank[profile];
+      investContainer.innerHTML = `
+        <div class="risk-header"><span class="risk-pill" style="background:${profileConfig.bg}; color:${profileConfig.color}">${profileConfig.label}</span><span class="risk-desc">${profileConfig.desc}</span></div>
+        <div class="invest-grid">${vehicles.map(v => `
+          <div class="invest-card"><h4>${v.n}</h4>
+          <div class="invest-meta"><span>Riesgo: ${v.risk}</span><span>Complejidad: ${v.complexity}</span><span>${v.liq}</span></div>
+          <p>${v.d}</p><div class="row"><b>Ventajas:</b> ${v.adv}</div><div class="row"><b>Riesgos:</b> ${v.risks}</div></div>
+        `).join('')}</div>
+        <div class="invest-disclaimer">Esta sección describe <b>categorías generales</b> de instrumentos usados en Colombia con fines educativos. No constituye una recomendación de compra de un activo específico ni promete rentabilidades: toda inversión implica riesgo y debe evaluarse con asesoría profesional antes de tomar una decisión.</div>
+      `;
+    }
+
+    // --- I. Cómo se calculó tu plan ---
+    const investAmt = base.disponible > 0 ? base.disponible * dist.investPct / 100 : 0;
+    const ocioAmt = base.disponible > 0 ? base.disponible * dist.ocioPct / 100 : 0;
+    let calcHTML = `
+      <div class="calc-row"><span class="calc-op">$</span><div><div class="calc-label">Ingreso neto</div><div class="calc-sub">Después de descuentos e impuestos</div></div><div class="calc-amt">${moneyShort(raw.ingreso)}</div></div>
+      <div class="calc-row"><span class="calc-op">−</span><div><div class="calc-label">Gastos esenciales</div><div class="calc-sub">Vivienda + alimentación + transporte + servicios + internet + deudas</div></div><div class="calc-amt">${moneyShort(base.totalEssential)}</div></div>
+      <div class="calc-row total"><span class="calc-op">=</span><div><div class="calc-label">Capacidad financiera disponible</div><div class="calc-sub">Base para el resto de la distribución</div></div><div class="calc-amt">${moneyShort(Math.max(0,base.disponible))}</div></div>
+    `;
+    if(base.disponible > 0){
+      calcHTML += `<div class="calc-divider">Distribución aplicada sobre la capacidad disponible</div>`;
+      const rows = [
+        {name:'Fondo de emergencia', color:'var(--coral)', p:dist.fondoEmergenciaPct, amt:fondoAmt},
+        {name:'Ahorro general', color:'var(--teal)', p:dist.ahorroGeneralPct, amt:ahorroGralAmt},
+        {name:'Meta financiera' + (dist.hasMeta ? ` (${raw.metaNombre})` : ''), color:'#7C8FB0', p:dist.metaPct, amt:metaAmt},
+        {name:'Fondo educativo', color:'var(--gold)', p:dist.eduPct, amt:eduAmount},
+        {name:'Inversión', color:'#B7A6D9', p:dist.investPct, amt:investAmt},
+        {name:'Ocio / libre disposición', color:'#D8CBB0', p:dist.ocioPct, amt:ocioAmt},
+      ];
+      calcHTML += rows.map(r => `
+        <div class="calc-dist-row"><span class="calc-dist-name"><span class="swatch" style="background:${r.color}; display:inline-block; width:10px; height:10px; border-radius:3px;"></span>${r.name}</span>
+        <span class="calc-dist-pct">${r.p.toFixed(1)}%</span><span class="calc-dist-amt">${moneyShort(r.amt)}</span></div>
+      `).join('');
+    }
+    document.getElementById('calc-steps').innerHTML = calcHTML;
+
+    // --- Habits (kept accessible even though not a separate top section now) ---
+    // (habits are referenced inside the reflection / savings section narratively)
+
+    // --- Reflexión ---
+    document.getElementById('reflect-text').textContent =
+      `Este plan calcula primero tus gastos esenciales reales y los resta de tu ingreso neto para obtener tu capacidad financiera disponible. Tú controlas cuánto de esa capacidad va a ocio (2%–15%) y cuánto a ahorro (5%–30%) con los controles deslizantes; el resto se reparte automáticamente entre fondo de emergencia, ahorro general, tu meta personal, educación e inversión, respetando siempre el orden de prioridad: esenciales, fondo de emergencia, metas, educación e inversión.`;
+    document.getElementById('reflect-text-2').textContent =
+      `El diagnóstico de salud financiera y la decisión de mostrar o no recomendaciones de inversión se derivan de los mismos datos: proporción de gastos esenciales, nivel de endeudamiento, existencia de un fondo de emergencia y estabilidad de tu ingreso, siguiendo los criterios de endeudamiento sostenible descritos en los documentos del proyecto. Cuando la capacidad de ahorro es limitada, el sistema no oculta el problema: lo nombra explícitamente y reordena las prioridades en vez de repartir dinero que, en la práctica, no existe.`;
+
+    document.getElementById('sources-strip').innerHTML = [
+      'Educación Financiera · BCRA', 'Finanzas Para Ti · SBS', 'Guía Jóvenes: manejo de dinero',
+      'Ahorro e inversión', 'Guía de servicios · ICETEX', 'Administración de Portafolios · AMV', 'Psicología del consumidor'
+    ].map(s => `<span class="source-chip">${s}</span>`).join('');
+  }
+
+  document.getElementById('ocio-slider').addEventListener('input', renderAll);
+  document.getElementById('ahorro-slider').addEventListener('input', renderAll);
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const carrera = document.getElementById('carrera').value.trim();
+    const semestre = parseInt(document.getElementById('semestre').value, 10);
+    const horas = parseFloat(document.getElementById('horas').value);
+    const ingreso = parseFloat(document.getElementById('ingreso').value);
+    const objetivo = document.getElementById('objetivo').value.trim();
+    const viviendaTipoVal = viviendaTipo.value;
+    const viviendaMontoInput = parseFloat(document.getElementById('vivienda_monto').value) || 0;
+    const alimentacion = parseFloat(document.getElementById('alimentacion').value) || 0;
+    const transporte = parseFloat(document.getElementById('transporte').value) || 0;
+    const servicios = parseFloat(document.getElementById('servicios').value) || 0;
+    const internet = parseFloat(document.getElementById('internet').value) || 0;
+    const deudas = parseFloat(document.getElementById('deudas').value) || 0;
+    const tieneFondo = document.getElementById('tiene_fondo').value === 'si';
+    const metaNombre = document.getElementById('meta_nombre').value.trim();
+    const metaValor = parseFloat(document.getElementById('meta_valor').value) || 0;
+
+    if(!carrera || !objetivo || isNaN(semestre) || semestre <= 0 || isNaN(ingreso) || ingreso <= 0 || isNaN(horas) || horas < 0){
+      errorMsg.style.display = 'block'; return;
+    }
+    errorMsg.style.display = 'none';
+
+    const raw = {carrera, semestre, horas, ingreso, objetivo, viviendaTipo:viviendaTipoVal, viviendaMontoInput, alimentacion, transporte, servicios, internet, deudas, tieneFondo, metaNombre: metaNombre || 'Tu meta financiera', metaValor};
+    const base = buildBase(raw);
+    const sliders = defaultSliders(raw, base);
+    document.getElementById('ocio-slider').value = sliders.ocio;
+    document.getElementById('ahorro-slider').value = sliders.ahorro;
+    state = {raw, base};
+    renderAll();
+
+    results.style.display = 'block';
+    setTimeout(() => { document.getElementById('perfil').scrollIntoView({behavior:'smooth', block:'start'}); }, 60);
+  });
+})();
+</script>
+
+</body>
+</html>
